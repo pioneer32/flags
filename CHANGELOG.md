@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-alpha.40](https://github.com/pioneer32/flags/compare/v1.0.0-alpha.39...v1.0.0-alpha.40) (2024-04-22)
+
+### Bug Fixes
+
+- Use process.cwd instead ([232d86e](https://github.com/pioneer32/flags/commit/232d86ec7ee8594f9313ab8c96c209f6b95b03d5))
+
+### Features
+
+- Add --help message ([378be6f](https://github.com/pioneer32/flags/commit/378be6f2c878be604c745fc90bd9c187eb405b7c))
+- Add init command ([4f11850](https://github.com/pioneer32/flags/commit/4f11850f987efa026844d7b94e39b9cd8cf8d932))
+
 # [1.0.0-alpha.39](https://github.com/pioneer32/flags/compare/v1.0.0-alpha.38...v1.0.0-alpha.39) (2024-04-22)
 
 ### Bug Fixes
