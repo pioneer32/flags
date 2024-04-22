@@ -124,7 +124,7 @@ const init = async () => {
       describe: 'List flags',
       handler: async () => {
         const { prompter, flagManager } = await init();
-        prompter.printDetails(flagManager.getFlags().map(({ name, enabledForEnvs, description }) => [name, enabledForEnvs.join(), description]));
+        prompter.printDetails(flagManager.getFlags().map(({ name, enabledForEnvs, description }) => [name, `[${enabledForEnvs.join()}]`, description]));
       },
     })
     .command({
@@ -152,5 +152,5 @@ const init = async () => {
     .demandCommand(1, 'NO_COMMAND')
     .parseAsync();
 
-  console.log(chalk.green('\nDone!\n'));
+  console.log(chalk.green('\nDone! Happy coding!\n'));
 })();
