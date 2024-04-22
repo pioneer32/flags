@@ -1,10 +1,10 @@
 import path from 'node:path';
-import { exec } from 'node:child_process';
+import {exec} from 'node:child_process';
 import util from 'node:util';
-import { findRoot } from '@manypkg/find-root';
-import chalk from 'chalk';
+import {findRoot} from '@manypkg/find-root';
 import os from 'node:os';
 import process from 'node:process';
+import Logger from './Logger.js';
 
 const execAsync = util.promisify(exec);
 
@@ -21,8 +21,8 @@ export default class Env {
   private gitUserName!: string;
   async load() {
     const project = await findRoot(process.cwd());
-    console.info(chalk.grey(`INFO Determined packager: ${project.tool.type}`));
-    console.info(chalk.grey(`INFO Determined project root (monorepo root): "${project.rootDir}"`));
+    Logger.info(`Determined packager: ${project.tool.type}`);
+    Logger.info(`Determined project root (monorepo root): "${project.rootDir}"`);
     this._root = project.rootDir;
     this.gitUserName = await this.getGitUsername();
   }
@@ -56,7 +56,7 @@ export default class Env {
     const name = cp1.stdout.trim();
 
     if (cp2.stderr) {
-      console.error(chalk.red(`Failed exec "git config user.email". Reason: ${cp2.stderr}`));
+      Logger.warn(`Failed exec "git config user.email". Reason: ${cp2.stderr}`);
       return name;
     }
     return `${name} <${cp2.stdout.trim()}>`;

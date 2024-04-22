@@ -1,10 +1,10 @@
 import path from 'node:path';
 import fs from 'fs-extra';
 import Joi from 'joi';
-import chalk from 'chalk';
 
 import Env from './Env.js';
 import ChainedError from './ChainedError.js';
+import Logger from './Logger.js';
 
 /* eslint-disable no-console */
 
@@ -54,7 +54,7 @@ export default class Config {
   async load() {
     const filename = this.configFilename;
     if (!(await fs.pathExists(filename))) {
-      console.warn(chalk.yellow(`WARN No config file found. Defaulting. Using default options`));
+      Logger.warn(`No config file found. Defaulting. Using default options`);
       this._opts = { ...defaultConfig };
       return;
     }
@@ -62,7 +62,7 @@ export default class Config {
     try {
       const opts = await fs.readJson(filename);
       this._opts = await configSchema.validateAsync(opts);
-      console.info(chalk.grey(`INFO Config loaded from "${filename}"`));
+      Logger.info(`Config loaded from "${filename}"`);
     } catch (err) {
       throw new ChainedError(`Failed to load config file "${filename}"`, err as Error);
     }
@@ -93,7 +93,7 @@ export default class Config {
     }
     try {
       await fs.writeJson(filename, this._opts, { spaces: '  ' });
-      console.info(chalk.grey(`INFO Default config saved in "${filename}"`));
+      Logger.info(`Default config saved in "${filename}"`);
     } catch (err) {
       throw new ChainedError(`Failed to write config file "${filename}"`, err as Error);
     }

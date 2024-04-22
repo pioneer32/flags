@@ -1,12 +1,12 @@
 import fs from 'fs-extra';
 import Joi from 'joi';
-import { DateTime } from 'luxon';
-import chalk from 'chalk';
+import {DateTime} from 'luxon';
 import _ from 'lodash';
 
 import Env from './Env.js';
 import Config from './Config.js';
 import ChainedError from './ChainedError.js';
+import Logger from './Logger.js';
 
 /* eslint-disable no-console */
 
@@ -43,14 +43,14 @@ export default class FlagManager {
   async load() {
     const filename = this._deps.config.get('flagFile');
     if (!(await fs.pathExists(filename))) {
-      console.warn(chalk.yellow(`WARN No feature flags file found. A new file will be created at "${filename}"`));
+      Logger.warn(`No feature flags file found. A new file will be created at "${filename}"`);
       this._flags = [];
       return;
     }
     try {
       const flags = await fs.readJson(filename);
       this._flags = await flagsSchema.validateAsync(flags);
-      console.info(chalk.grey(`INFO Feature flags loaded from "${filename}"`));
+      Logger.info(`Feature flags loaded from "${filename}"`);
     } catch (err) {
       throw new ChainedError(`Failed to load flag file "${filename}"`, err as Error);
     }
@@ -71,9 +71,9 @@ export default class FlagManager {
               output[name] = this.calculateEnabledForEnvs(enabledFor);
               return output;
             }, {} as Record<string, string[]>),
-            { spaces: '  ' },
+            { spaces: '  ' }
           )
-          .then(() => console.info(chalk.grey(`INFO Output JSON saved at "${filenameJson}"`))),
+          .then(() => Logger.info(`Output JSON saved at "${filenameJson}"`)),
         ...(filenameTypeDef
           ? [
               fs
@@ -85,9 +85,9 @@ export default class FlagManager {
                     `export type FeatureFlagName =`,
                     ...flags.map((name) => `  | '${name}'`),
                     `  ;`,
-                  ].join('\n'),
+                  ].join('\n')
                 )
-                .then(() => console.info(chalk.grey(`INFO Output Typescript Definition saved at "${filenameJson}"`))),
+                .then(() => Logger.info(`Output Typescript Definition saved at "${filenameJson}"`)),
             ]
           : []),
       ]);
@@ -100,7 +100,7 @@ export default class FlagManager {
     const filename = this._deps.config.get('flagFile');
     try {
       await fs.writeJson(filename, this.flags, { spaces: '  ' });
-      console.info(chalk.grey(`INFO Feature flags saved in "${filename}"`));
+      Logger.info(`Feature flags saved in "${filename}"`);
     } catch (err) {
       throw new ChainedError(`Failed to write flag file "${filename}"`, err as Error);
     }
@@ -118,7 +118,7 @@ export default class FlagManager {
       throw new Error(
         flag.deleted
           ? `Feature Flag ${name} already existed in the past. Reusing names is not allowed. Please consider another name`
-          : `Feature Flag ${name} already exists. Please consider another name`,
+          : `Feature Flag ${name} already exists. Please consider another name`
       );
     }
     const enabledFor = this._deps.config.get('environments')[0];

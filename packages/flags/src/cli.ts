@@ -1,5 +1,5 @@
 import yargs from 'yargs';
-import { hideBin } from 'yargs/helpers';
+import {hideBin} from 'yargs/helpers';
 import process from 'node:process';
 import banner from 'node-banner';
 import chalk from 'chalk';
@@ -8,6 +8,7 @@ import FlagManager from './FlagManager.js';
 import Config from './Config.js';
 import Env from './Env.js';
 import Prompter from './Prompter.js';
+import Logger from './Logger.js';
 
 /* eslint-disable no-console */
 
@@ -86,7 +87,7 @@ const init = async () => {
         const envChange = enabledFor !== trx.details.enabledFor;
 
         if (!descChange && !envChange) {
-          console.info('WARN No changes to make');
+          Logger.warn(`No changes to make`);
           return;
         }
 
@@ -107,7 +108,7 @@ const init = async () => {
       describe: 'Check the feature flags files are well-formed',
       handler: async () => {
         await init(); // this loads Feature Flags file... and validates it
-        console.info('INFO No error found');
+        Logger.message(`No error found`);
       },
     })
     .command({
@@ -139,9 +140,9 @@ const init = async () => {
     .recommendCommands()
     .fail((msg, err) => {
       if (msg === 'NO_COMMAND') {
-        console.error(chalk.red('ERR No command is given. Specify --help for available options\n'));
+        Logger.error(`No command is given. Specify --help for available options\n`);
       } else {
-        console.error(chalk.red(err?.message || msg));
+        Logger.error(err?.message || msg);
         if (err) {
           throw err;
         }
