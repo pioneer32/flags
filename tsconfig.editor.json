@@ -1,0 +1,8 @@
+{
+  // This is to fool IDE - it doesn't support multiple contexts with individual tsconfigs yet :(
+  "$schema": "https://json.schemastore.org/tsconfig.json",
+  "extends": "./tsconfig",
+  "compilerOptions": {
+    "experimentalDecorators": true
+  }
+}

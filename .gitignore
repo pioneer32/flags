@@ -1,0 +1,12 @@
+.env
+.DS_Store
+dist
+Thumbs.db
+node_modules
+*.tsbuildinfo
+.serverless
+.webpack
+lerna-debug.log
+.idea
+.cache
+yarn-error.log

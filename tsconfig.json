@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "allowJs": true,
+    "checkJs": false,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": false,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "jsx": "react",
+    "lib": ["ESNext", "DOM"],
+    "moduleResolution": "node",
+    "noEmit": false,
+    "isolatedModules": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noImplicitReturns": true,
+    "strictBindCallApply": true,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": true,
+    "strictNullChecks": true,
+    "strict": true,
+    "alwaysStrict": true,
+    "target": "es2015",
+    "baseUrl": ".",
+    "typeRoots": ["node_modules/@types"],
+    "types": ["jest", "node"]
+  },
+  "exclude": ["node_modules"]
+}

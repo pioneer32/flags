@@ -1,0 +1,78 @@
+{
+  "name": "@pioneer32/flags",
+  "version": "0.0.1-preview",
+  "license": "MIT",
+  "author": "Vlad Churakov",
+  "scripts": {
+    "clean": "rm -rf ./dist/*",
+    "prepack": "npm run clean; npm run prepack:esm && npm run prepack:cli",
+    "prepack:cli": "./scripts/compose-cli-cjs.cjs",
+    "prepack:esm": "tsc -p ./tsconfig.esm.json",
+    "test": "FORCE_COLOR=1 npm exec -- jest --runInBand --passWithNoTests",
+    "test:watch": "FORCE_COLOR=1 npm exec -- jest --watch",
+    "typecheck": "tsc -noEmit -p ./tsconfig.build.json && tsc -noEmit -p ./tsconfig.test.json",
+    "prepublishOnly": "./scripts/patch-package_json.cjs",
+    "postpublish": "git checkout ./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "cli.cjs",
+    "!**/*.test.ts",
+    "!**/*.test.tsx",
+    "!**/*.tsbuildinfo"
+  ],
+  "type": "module",
+  "main": "",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "default": "./src/index.ts",
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./src/*",
+        "./dist/types/*"
+      ]
+    }
+  },
+  "bin": {
+    "flags": "./cli.cjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pioneer32/flags.git",
+    "directory": "packages/flags"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^5.0.1",
+    "@manypkg/find-root": "^2.2.1",
+    "lodash": "^4.17.21",
+    "chalk": "^5.3.0",
+    "fs-extra": "^11.2.0",
+    "joi": "^17.12.3",
+    "luxon": "^3.4.4",
+    "node-banner": "^1.4.0",
+    "ts-node": "^10.9.1",
+    "ts-custom-error": "^3.3.1",
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "@types/node": "~18.15.3",
+    "@types/fs-extra": "^11.0.4",
+    "@types/lodash": "^4.17.0",
+    "@types/luxon": "^3.4.2",
+    "jest": "^29.1.0",
+    "typescript": "^5.4.5"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
