@@ -1,6 +1,6 @@
 import fs from 'fs-extra';
 import Joi from 'joi';
-import {DateTime} from 'luxon';
+import { DateTime } from 'luxon';
 import _ from 'lodash';
 
 import Env from './Env.js';
@@ -207,7 +207,11 @@ export default class FlagManager {
   calculateEnabledForEnvs(enabledFor: string): string[] {
     this.ensureLoaded();
     let enabled = true;
-    return this._deps.config.get('environments').filter((env) => {
+    const environments = this._deps.config.get('environments');
+    if (!environments.includes(enabledFor)) {
+      return [];
+    }
+    return environments.filter((env) => {
       if (!enabled) {
         return false;
       }
