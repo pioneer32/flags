@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-alpha.39](https://github.com/pioneer32/flags/compare/v1.0.0-alpha.38...v1.0.0-alpha.39) (2024-04-22)
+
+### Bug Fixes
+
+- Missing files ([2c216a2](https://github.com/pioneer32/flags/commit/2c216a25e0fcdeea9b09c6165d88f3fbc27253ee))
+
 # [1.0.0-alpha.38](https://github.com/pioneer32/flags/compare/v1.0.0-alpha.37...v1.0.0-alpha.38) (2024-04-22)
 
 ### Bug Fixes
