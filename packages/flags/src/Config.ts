@@ -40,7 +40,14 @@ const defaultConfig: Params = {
 const configSchema = Joi.object<Params>({
   flagFile: Joi.string().default(defaultConfig.flagFile),
   flagPrefix: Joi.string().default(defaultConfig.flagPrefix),
-  environments: Joi.array().items(Joi.string().required()).min(1).default(defaultConfig.environments),
+  environments: Joi.array()
+    .items(
+      Joi.string()
+        .pattern(/^[a-z\d_\-]+$/i)
+        .required()
+    )
+    .min(1)
+    .default(defaultConfig.environments),
   output: Joi.object<Params['output']>({
     jsonFile: Joi.string().required(),
     typeDefFile: Joi.string(),
