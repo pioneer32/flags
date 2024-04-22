@@ -27,7 +27,7 @@ const flagsSchema = Joi.array<Flag[]>().items({
   name: Joi.string().required(),
   deleted: Joi.boolean().empty(false),
   description: Joi.string().empty(''),
-  enabledFor: Joi.string().required(),
+  enabledFor: Joi.string().empty(''),
   history: Joi.array<Flag['history']>().items({
     action: Joi.string().required(),
     by: Joi.string().required(),
@@ -124,11 +124,8 @@ export default class FlagManager {
     const enabledFor = this._deps.config.get('environments')[0];
 
     return {
-      details: {
-        enabledFor,
-        enabledForEnvs: this.calculateEnabledForEnvs(enabledFor),
-      },
-      commit: async ({ description }: { description: string }) => {
+      details: { enabledFor },
+      commit: async ({ description, enabledFor }: { description: string; enabledFor: string }) => {
         this._flags.push({
           name,
           description,
@@ -208,7 +205,7 @@ export default class FlagManager {
     this.ensureLoaded();
     let enabled = true;
     const environments = this._deps.config.get('environments');
-    if (!environments.includes(enabledFor)) {
+    if (!enabledFor || !environments.includes(enabledFor)) {
       return [];
     }
     return environments.filter((env) => {

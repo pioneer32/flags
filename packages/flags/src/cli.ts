@@ -1,5 +1,5 @@
 import yargs from 'yargs';
-import {hideBin} from 'yargs/helpers';
+import { hideBin } from 'yargs/helpers';
 import process from 'node:process';
 import banner from 'node-banner';
 import chalk from 'chalk';
@@ -41,14 +41,15 @@ const init = async () => {
         const username = env.get('gitUserName') || env.get('osUserName');
         const trx = flagManager.introduceNewFlag(name, username);
         const description = await prompter.askForValue('Description');
+        const enabledFor = await prompter.askForEnvironment(trx.details.enabledFor);
         await prompter.confirmDetails([
           ['Action', 'Adding a new Feature Flag'],
           ['with Name', name],
           ['with Description', description],
-          ['enable for Environment(s)', trx.details.enabledForEnvs.join()],
+          ...(enabledFor ? [['enable for Environment(s)', flagManager.calculateEnabledForEnvs(enabledFor).join()]] : []),
           ['by User', username],
         ]);
-        await trx.commit({ description });
+        await trx.commit({ description, enabledFor });
         await flagManager.generateOutput();
       },
     })
@@ -95,7 +96,7 @@ const init = async () => {
           ['Action', 'Updating a Feature Flag'],
           ['with Name', name],
           ...(descChange ? [['with new Description', description]] : []),
-          ...(envChange ? ([['enabling for Environment(s)', flagManager.calculateEnabledForEnvs(enabledFor).join()]] as [string, string][]) : []),
+          ...(envChange ? [['enabling for Environment(s)', flagManager.calculateEnabledForEnvs(enabledFor).join()]] : []),
 
           ['by User', username],
         ]);
@@ -124,7 +125,9 @@ const init = async () => {
       describe: 'List flags',
       handler: async () => {
         const { prompter, flagManager } = await init();
-        prompter.printDetails(flagManager.getFlags().map(({ name, enabledForEnvs, description }) => [name, `[${enabledForEnvs.join()}]`, description]));
+        prompter.printDetails(
+          flagManager.getFlags().map(({ name, enabledForEnvs, description }) => [name, enabledForEnvs.length ? `[${enabledForEnvs.join()}]` : '', description])
+        );
       },
     })
     .command({

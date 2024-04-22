@@ -44,10 +44,13 @@ export default class Prompter {
     return select({
       message: "Select environment it's enabled for",
       default: enabledFor,
-      choices: this._deps.config.get('environments').map((env) => ({
-        name: env,
-        value: env,
-      })),
+      choices: [
+        { name: '(none)', value: '' },
+        ...this._deps.config.get('environments').map((env) => ({
+          name: env,
+          value: env,
+        })),
+      ],
     });
   }
 
