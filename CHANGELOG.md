@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-alpha.42](https://github.com/pioneer32/flags/compare/v1.0.0-alpha.41...v1.0.0-alpha.42) (2024-04-22)
+
+### Bug Fixes
+
+- Env name must match "a-zA-Z0-9\_-" ([ce13b0e](https://github.com/pioneer32/flags/commit/ce13b0edbf6cc8bad8413779119258ed54af931b))
+- When environment in config change, it should not enable a flag for all envs ([dc4ac65](https://github.com/pioneer32/flags/commit/dc4ac6576121f186808ddc64c05d7261f4155381))
+
+### Features
+
+- Add _none_ for enabledFor env ([2645501](https://github.com/pioneer32/flags/commit/264550161fd31f3153999e8bd702b39780ed4143))
+
 # [1.0.0-alpha.41](https://github.com/pioneer32/flags/compare/v1.0.0-alpha.40...v1.0.0-alpha.41) (2024-04-22)
 
 ### Features
