@@ -134,14 +134,21 @@ const init = async () => {
         await config.save();
       },
     })
+    .help()
+    .version(false)
+    .recommendCommands()
     .fail((msg, err) => {
-      console.error(chalk.red(err?.message || msg));
-      if (err) {
-        throw err;
+      if (msg === 'NO_COMMAND') {
+        console.error(chalk.red('ERR No command is given. Specify --help for available options\n'));
+      } else {
+        console.error(chalk.red(err?.message || msg));
+        if (err) {
+          throw err;
+        }
       }
       process.exit(1);
     })
-    .demandCommand(1)
+    .demandCommand(1, 'NO_COMMAND')
     .parseAsync();
 
   console.log(chalk.green('\nDone!\n'));
