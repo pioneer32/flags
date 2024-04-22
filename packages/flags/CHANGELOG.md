@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-alpha.41](https://github.com/pioneer32/flags/compare/v1.0.0-alpha.40...v1.0.0-alpha.41) (2024-04-22)
+
+### Features
+
+- Minor tweak ([61f958e](https://github.com/pioneer32/flags/commit/61f958eb8aabd8b26f7225d5e5229e8626d5f262))
+
 # [1.0.0-alpha.40](https://github.com/pioneer32/flags/compare/v1.0.0-alpha.39...v1.0.0-alpha.40) (2024-04-22)
 
 ### Bug Fixes
