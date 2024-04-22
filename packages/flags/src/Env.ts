@@ -1,17 +1,14 @@
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { exec } from 'node:child_process';
 import util from 'node:util';
 import { findRoot } from '@manypkg/find-root';
 import chalk from 'chalk';
-import os from 'os';
+import os from 'node:os';
+import process from 'node:process';
 
 const execAsync = util.promisify(exec);
 
 /* eslint-disable no-console */
-
-// eslint-disable-next-line @typescript-eslint/naming-convention
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 type Params = {
   rootDir: string;
@@ -23,7 +20,7 @@ export default class Env {
   private _root!: string;
   private gitUserName!: string;
   async load() {
-    const project = await findRoot(__dirname);
+    const project = await findRoot(process.cwd());
     console.info(chalk.grey(`INFO Determined packager: ${project.tool.type}`));
     console.info(chalk.grey(`INFO Determined project root (monorepo root): "${project.rootDir}"`));
     this._root = project.rootDir;
