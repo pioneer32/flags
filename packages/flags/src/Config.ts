@@ -52,7 +52,7 @@ export default class Config {
   constructor(private _deps: Deps) {}
 
   async load() {
-    const filename = path.resolve(this._deps.env.get('rootDir'), 'flags.config.json');
+    const filename = this.configFilename;
     if (!(await fs.pathExists(filename))) {
       console.warn(chalk.yellow(`WARN No config file found. Defaulting. Using default options`));
       this._opts = { ...defaultConfig };
@@ -80,11 +80,27 @@ export default class Config {
       case 'output.jsonFile':
         return path.resolve(this.tempatePath(this._opts.output.jsonFile)) as OutputParams[T];
       case 'output.typeDefFile':
-        return (this._opts.output.typeDefFile &&
-          path.resolve(this.tempatePath(this._opts.output.typeDefFile))) as OutputParams[T];
+        return (this._opts.output.typeDefFile && path.resolve(this.tempatePath(this._opts.output.typeDefFile))) as OutputParams[T];
       default:
         throw new Error(`Unsupported config property: "${name}"`);
     }
+  }
+
+  async save() {
+    const filename = this.configFilename;
+    if (await fs.pathExists(filename)) {
+      throw new Error(`Config file already exists at "${filename}"`);
+    }
+    try {
+      await fs.writeJson(filename, this._opts, { spaces: '  ' });
+      console.info(chalk.grey(`INFO Default config saved in "${filename}"`));
+    } catch (err) {
+      throw new ChainedError(`Failed to write config file "${filename}"`, err as Error);
+    }
+  }
+
+  private get configFilename(): string {
+    return path.resolve(this._deps.env.get('rootDir'), 'flags.config.json');
   }
 
   private ensureLoaded() {

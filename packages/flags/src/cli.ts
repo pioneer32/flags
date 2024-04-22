@@ -94,12 +94,7 @@ const init = async () => {
           ['Action', 'Updating a Feature Flag'],
           ['with Name', name],
           ...(descChange ? [['with new Description', description]] : []),
-          ...(envChange
-            ? ([['enabling for Environment(s)', flagManager.calculateEnabledForEnvs(enabledFor).join()]] as [
-                string,
-                string,
-              ][])
-            : []),
+          ...(envChange ? ([['enabling for Environment(s)', flagManager.calculateEnabledForEnvs(enabledFor).join()]] as [string, string][]) : []),
 
           ['by User', username],
         ]);
@@ -128,11 +123,15 @@ const init = async () => {
       describe: 'List flags',
       handler: async () => {
         const { prompter, flagManager } = await init();
-        prompter.printDetails(
-          flagManager
-            .getFlags()
-            .map(({ name, enabledForEnvs, description }) => [name, enabledForEnvs.join(), description]),
-        );
+        prompter.printDetails(flagManager.getFlags().map(({ name, enabledForEnvs, description }) => [name, enabledForEnvs.join(), description]));
+      },
+    })
+    .command({
+      command: ['init'],
+      describe: 'Initialise a default config file',
+      handler: async () => {
+        const { config } = await init();
+        await config.save();
       },
     })
     .fail((msg, err) => {
