@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-alpha.43](https://github.com/pioneer32/flags/compare/v1.0.0-alpha.42...v1.0.0-alpha.43) (2024-04-23)
+
+### Bug Fixes
+
+- Deleted flags should not appear in the output ([92af26d](https://github.com/pioneer32/flags/commit/92af26db7c41a5f244989aea07e713f87a493349))
+
 # [1.0.0-alpha.42](https://github.com/pioneer32/flags/compare/v1.0.0-alpha.41...v1.0.0-alpha.42) (2024-04-22)
 
 ### Bug Fixes
