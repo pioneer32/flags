@@ -19,7 +19,7 @@ type Flag = {
   name: string;
   deleted?: boolean;
   description?: string;
-  enabledFor: string;
+  enabledFor: string[];
   history: { action: string; by: string; at: string }[];
 };
 
@@ -27,7 +27,7 @@ const flagsSchema = Joi.array<Flag[]>().items({
   name: Joi.string().required(),
   deleted: Joi.boolean().empty(false),
   description: Joi.string().empty(''),
-  enabledFor: Joi.string().empty(''),
+  enabledFor: Joi.alternatives(Joi.array<Flag['enabledFor']>().items(Joi.string().required()).default([]), Joi.string().required()),
   history: Joi.array<Flag['history']>().items({
     action: Joi.string().required(),
     by: Joi.string().required(),
@@ -49,7 +49,9 @@ export default class FlagManager {
     }
     try {
       const flags = await fs.readJson(filename);
-      this._flags = await flagsSchema.validateAsync(flags);
+      this._flags = (await flagsSchema.validateAsync(flags)).map((flag) =>
+        typeof flag.enabledFor === 'string' ? { ...flag, enabledFor: [flag.enabledFor] } : flag
+      );
       Logger.info(`Feature flags loaded from "${filename}"`);
     } catch (err) {
       throw new ChainedError(`Failed to load flag file "${filename}"`, err as Error);
@@ -68,7 +70,7 @@ export default class FlagManager {
             filenameJson,
             flags.reduce((output, { name, enabledFor }) => {
               // eslint-disable-next-line no-param-reassign
-              output[name] = this.calculateEnabledForEnvs(enabledFor);
+              output[name] = enabledFor;
               return output;
             }, {} as Record<string, string[]>),
             { spaces: '  ' }
@@ -121,11 +123,9 @@ export default class FlagManager {
           : `Feature Flag ${name} already exists. Please consider another name`
       );
     }
-    const enabledFor = this._deps.config.get('environments')[0];
-
     return {
-      details: { enabledFor },
-      commit: async ({ description, enabledFor }: { description: string; enabledFor: string }) => {
+      details: { enabledFor: this._deps.config.get('environments').slice(0, 1) },
+      commit: async ({ description, enabledFor }: { description: string; enabledFor: string[] }) => {
         this._flags.push({
           name,
           description,
@@ -146,7 +146,6 @@ export default class FlagManager {
     return {
       details: {
         enabledFor: flag.enabledFor,
-        enabledForEnvs: this.calculateEnabledForEnvs(flag.enabledFor),
         description: flag.description,
       },
       commit: async () => {
@@ -166,10 +165,9 @@ export default class FlagManager {
     return {
       details: {
         enabledFor: flag.enabledFor,
-        enabledForEnvs: this.calculateEnabledForEnvs(flag.enabledFor),
         description: flag.description,
       },
-      commit: async ({ description, enabledFor }: { description: string; enabledFor: string }) => {
+      commit: async ({ description, enabledFor }: { description: string; enabledFor: string[] }) => {
         flag.history.push({ action: 'Update', by: byUser, at: DateTime.now().toISO()! });
         flag.description = description;
         flag.enabledFor = enabledFor;
@@ -186,7 +184,6 @@ export default class FlagManager {
         name,
         description,
         enabledFor,
-        enabledForEnvs: this.calculateEnabledForEnvs(enabledFor),
       }));
   }
 
@@ -199,24 +196,5 @@ export default class FlagManager {
     if (!this._flags) {
       throw new Error('Config is not loaded. Did you forget to call load()?');
     }
-  }
-
-  calculateEnabledForEnvs(enabledFor: string): string[] {
-    this.ensureLoaded();
-    let enabled = true;
-    const environments = this._deps.config.get('environments');
-    if (!enabledFor || !environments.includes(enabledFor)) {
-      return [];
-    }
-    return environments.filter((env) => {
-      if (!enabled) {
-        return false;
-      }
-      if (env === enabledFor) {
-        enabled = false;
-        return true;
-      }
-      return true;
-    });
   }
 }
