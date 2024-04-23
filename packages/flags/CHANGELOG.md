@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-alpha.45](https://github.com/pioneer32/flags/compare/v1.0.0-alpha.44...v1.0.0-alpha.45) (2024-04-23)
+
+### Bug Fixes
+
+- Old configs may contain no enabledFor property ([f694b19](https://github.com/pioneer32/flags/commit/f694b19cc18c568b6b1d1fe5fbf74bf2a414229d))
+
 # [1.0.0-alpha.44](https://github.com/pioneer32/flags/compare/v1.0.0-alpha.43...v1.0.0-alpha.44) (2024-04-23)
 
 ### Features
