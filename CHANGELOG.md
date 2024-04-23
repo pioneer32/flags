@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-alpha.44](https://github.com/pioneer32/flags/compare/v1.0.0-alpha.43...v1.0.0-alpha.44) (2024-04-23)
+
+### Features
+
+- Envs can be selected individually ([c8b7f89](https://github.com/pioneer32/flags/commit/c8b7f89e72eab8dc2c212b6834f8c1f9242fb146))
+
 # [1.0.0-alpha.43](https://github.com/pioneer32/flags/compare/v1.0.0-alpha.42...v1.0.0-alpha.43) (2024-04-23)
 
 ### Bug Fixes
