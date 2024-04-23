@@ -1,4 +1,4 @@
-import { confirm, input, select } from '@inquirer/prompts';
+import { checkbox, confirm, input, select } from '@inquirer/prompts';
 import process from 'node:process';
 import chalk from 'chalk';
 
@@ -29,26 +29,25 @@ export default class Prompter {
     return this.prefixFeatureFlagName(flagName);
   }
 
-  async askForExistingFlagName(flags: { name: string; description?: string; enabledForEnvs: string[] }[]) {
+  async askForExistingFlagName(flags: { name: string; description?: string; enabledFor: string[] }[]) {
     return select({
       message: 'Select a flag',
-      choices: flags.map(({ name, enabledForEnvs, description }) => ({
+      choices: flags.map(({ name, enabledFor, description }) => ({
         value: name,
-        name: `${name}${enabledForEnvs?.length ? ` [${enabledForEnvs.join()}]` : ''}`,
+        name: `${name}${enabledFor?.length ? ` [${enabledFor.join()}]` : ''}`,
         ...(description ? { description } : {}),
       })),
     });
   }
 
-  async askForEnvironment(enabledFor: string) {
-    return select({
+  async askForEnvironments(enabledFor: string[]) {
+    return checkbox({
       message: "Select environment it's enabled for",
-      default: enabledFor,
       choices: [
-        { name: '(none)', value: '' },
         ...this._deps.config.get('environments').map((env) => ({
           name: env,
           value: env,
+          checked: enabledFor.includes(env),
         })),
       ],
     });

@@ -41,12 +41,12 @@ const init = async () => {
         const username = env.get('gitUserName') || env.get('osUserName');
         const trx = flagManager.introduceNewFlag(name, username);
         const description = await prompter.askForValue('Description');
-        const enabledFor = await prompter.askForEnvironment(trx.details.enabledFor);
+        const enabledFor = await prompter.askForEnvironments(trx.details.enabledFor);
         await prompter.confirmDetails([
           ['Action', 'Adding a new Feature Flag'],
           ['with Name', name],
           ['with Description', description],
-          ...(enabledFor ? [['enable for Environment(s)', flagManager.calculateEnabledForEnvs(enabledFor).join()]] : []),
+          ...(enabledFor ? [['enable for Environment(s)', enabledFor.join()]] : []),
           ['by User', username],
         ]);
         await trx.commit({ description, enabledFor });
@@ -65,7 +65,7 @@ const init = async () => {
           ['Action', 'Removing a Feature Flag'],
           ['with Name', name],
           ...(trx.details.description ? [['with Description', trx.details.description]] : []),
-          ['which currently enabled for Environment(s)', trx.details.enabledForEnvs.join()],
+          ['which currently enabled for Environment(s)', trx.details.enabledFor.join()],
           ['by User', username],
         ]);
         await trx.commit();
@@ -82,7 +82,7 @@ const init = async () => {
         const trx = flagManager.updateFlag(name, username);
 
         const description = await prompter.askForValue('Description', trx.details.description);
-        const enabledFor = await prompter.askForEnvironment(trx.details.enabledFor);
+        const enabledFor = await prompter.askForEnvironments(trx.details.enabledFor);
 
         const descChange = description === trx.details.description;
         const envChange = enabledFor !== trx.details.enabledFor;
@@ -96,7 +96,7 @@ const init = async () => {
           ['Action', 'Updating a Feature Flag'],
           ['with Name', name],
           ...(descChange ? [['with new Description', description]] : []),
-          ...(envChange ? [['enabling for Environment(s)', flagManager.calculateEnabledForEnvs(enabledFor).join()]] : []),
+          ...(envChange ? [['enabling for Environment(s)', enabledFor.join()]] : []),
 
           ['by User', username],
         ]);
@@ -126,7 +126,7 @@ const init = async () => {
       handler: async () => {
         const { prompter, flagManager } = await init();
         prompter.printDetails(
-          flagManager.getFlags().map(({ name, enabledForEnvs, description }) => [name, enabledForEnvs.length ? `[${enabledForEnvs.join()}]` : '', description])
+          flagManager.getFlags().map(({ name, enabledFor, description }) => [name, enabledFor.length ? `[${enabledFor.join()}]` : '', description])
         );
       },
     })
