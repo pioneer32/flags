@@ -60,13 +60,13 @@ export default class FlagManager {
     this.ensureLoaded();
     const filenameJson = this._deps.config.get('output.jsonFile');
     const filenameTypeDef = this._deps.config.get('output.typeDefFile');
-    const flags = this.flags.map(({ name }) => name);
+    const flags = this.getFlags();
     try {
       await Promise.all([
         fs
           .writeJson(
             filenameJson,
-            this.flags.reduce((output, { name, enabledFor }) => {
+            flags.reduce((output, { name, enabledFor }) => {
               // eslint-disable-next-line no-param-reassign
               output[name] = this.calculateEnabledForEnvs(enabledFor);
               return output;
@@ -83,7 +83,7 @@ export default class FlagManager {
                     `/* This content is generated. Any change will be lost */`,
                     ``,
                     `export type FeatureFlagName =`,
-                    ...flags.map((name) => `  | '${name}'`),
+                    ...flags.map(({ name }) => `  | '${name}'`),
                     `  ;`,
                   ].join('\n')
                 )
