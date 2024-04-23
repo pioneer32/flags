@@ -125,9 +125,7 @@ const init = async () => {
       describe: 'List flags',
       handler: async () => {
         const { prompter, flagManager } = await init();
-        prompter.printDetails(
-          flagManager.getFlags().map(({ name, enabledFor, description }) => [name, enabledFor.length ? `[${enabledFor.join()}]` : '', description])
-        );
+        prompter.printDetails(flagManager.getFlags().map(({ name, enabledFor, description }) => [name, `[${(enabledFor || []).join()}]`, description]));
       },
     })
     .command({

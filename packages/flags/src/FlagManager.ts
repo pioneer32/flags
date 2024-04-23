@@ -27,7 +27,7 @@ const flagsSchema = Joi.array<Flag[]>().items({
   name: Joi.string().required(),
   deleted: Joi.boolean().empty(false),
   description: Joi.string().empty(''),
-  enabledFor: Joi.alternatives(Joi.array<Flag['enabledFor']>().items(Joi.string().required()).default([]), Joi.string().required()),
+  enabledFor: Joi.alternatives(Joi.array<Flag['enabledFor']>().items(Joi.string().optional()).default([]), Joi.string().required()),
   history: Joi.array<Flag['history']>().items({
     action: Joi.string().required(),
     by: Joi.string().required(),
@@ -50,7 +50,7 @@ export default class FlagManager {
     try {
       const flags = await fs.readJson(filename);
       this._flags = (await flagsSchema.validateAsync(flags)).map((flag) =>
-        typeof flag.enabledFor === 'string' ? { ...flag, enabledFor: [flag.enabledFor] } : flag
+        !flag.enabledFor ? { ...flag, enabledFor: [] } : typeof flag.enabledFor === 'string' ? { ...flag, enabledFor: [flag.enabledFor] } : flag
       );
       Logger.info(`Feature flags loaded from "${filename}"`);
     } catch (err) {
