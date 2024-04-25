@@ -1,12 +1,24 @@
 import path from 'node:path';
-import {exec} from 'node:child_process';
-import util from 'node:util';
-import {findRoot} from '@manypkg/find-root';
+import { exec } from 'node:child_process';
+import { findRoot } from '@manypkg/find-root';
 import os from 'node:os';
 import process from 'node:process';
 import Logger from './Logger.js';
 
-const execAsync = util.promisify(exec);
+// util.promisify(exec) doesn't give access to stderr, when error code isn't 0
+const execAsync = (label: string, cmd: string) => {
+  return new Promise<string>((resolve, reject) => {
+    exec(cmd, (error, stdout, stderr) => {
+      if (stderr) {
+        Logger.warn(`[${label}] stderr: ${stderr}`);
+      }
+      if (error) {
+        return reject(error);
+      }
+      resolve(stdout);
+    });
+  });
+};
 
 /* eslint-disable no-console */
 
@@ -18,7 +30,7 @@ type Params = {
 
 export default class Env {
   private _root!: string;
-  private gitUserName!: string;
+  private gitUserName!: string | null;
   async load() {
     const project = await findRoot(process.cwd());
     Logger.info(`Determined packager: ${project.tool.type}`);
@@ -33,7 +45,7 @@ export default class Env {
       case 'rootDir':
         return path.resolve(this._root);
       case 'gitUserName':
-        return this.gitUserName;
+        return this.gitUserName as Params[T];
       case 'osUserName':
         return os.userInfo.name;
 
@@ -49,16 +61,18 @@ export default class Env {
   }
 
   private async getGitUsername() {
-    const [cp1, cp2] = await Promise.all([execAsync('git config user.name'), execAsync('git config user.email')]);
-    if (cp1.stderr) {
-      throw new Error(`Failed exec "git config user.name". Reason: ${cp1.stderr}`);
+    let gitUserName, gitUserEmail: string;
+    try {
+      gitUserName = (await execAsync('GIT', 'git config user.name')).trim();
+    } catch (e) {
+      return null;
     }
-    const name = cp1.stdout.trim();
 
-    if (cp2.stderr) {
-      Logger.warn(`Failed exec "git config user.email". Reason: ${cp2.stderr}`);
-      return name;
+    try {
+      gitUserEmail = await execAsync('GIT', 'git config user.email');
+      return `${gitUserName} <${gitUserEmail.trim()}>`;
+    } catch (e) {
+      return gitUserName;
     }
-    return `${name} <${cp2.stdout.trim()}>`;
   }
 }
