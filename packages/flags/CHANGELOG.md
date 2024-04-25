@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-alpha.46](https://github.com/pioneer32/flags/compare/v1.0.0-alpha.45...v1.0.0-alpha.46) (2024-04-25)
+
+### Bug Fixes
+
+- Prevent it from failing when git exist with non-zero ([2528a84](https://github.com/pioneer32/flags/commit/2528a84e5062aee8f0e6b56d061bf8bda595fd77))
+
 # [1.0.0-alpha.45](https://github.com/pioneer32/flags/compare/v1.0.0-alpha.44...v1.0.0-alpha.45) (2024-04-23)
 
 ### Bug Fixes
