@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-alpha.48](https://github.com/pioneer32/flags/compare/v1.0.0-alpha.47...v1.0.0-alpha.48) (2024-10-14)
+
+### Bug Fixes
+
+- Unsupported config property: "git.commit" ([72fe06e](https://github.com/pioneer32/flags/commit/72fe06e3cf59c231bb2b7e8b2ab81d36292594a0))
+
 # [1.0.0-alpha.47](https://github.com/pioneer32/flags/compare/v1.0.0-alpha.46...v1.0.0-alpha.47) (2024-10-14)
 
 ### Features
