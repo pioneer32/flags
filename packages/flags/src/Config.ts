@@ -12,6 +12,9 @@ type Params = {
   flagFile: string;
   flagPrefix: string;
   environments: string[];
+  git?: {
+    commit: boolean;
+  };
   output: {
     jsonFile: string;
     typeDefFile?: string;
@@ -19,6 +22,7 @@ type Params = {
 };
 
 type OutputParams = Omit<Params, 'output'> & {
+  'git.commit'?: NonNullable<Params['git']>['commit'];
   'output.jsonFile': Params['output']['jsonFile'];
   'output.typeDefFile': Params['output']['typeDefFile'];
 };
@@ -48,6 +52,9 @@ const configSchema = Joi.object<Params>({
     )
     .min(1)
     .default(defaultConfig.environments),
+  git: Joi.object<Params['git']>({
+    commit: Joi.boolean().required(),
+  }).optional(),
   output: Joi.object<Params['output']>({
     jsonFile: Joi.string().required(),
     typeDefFile: Joi.string(),

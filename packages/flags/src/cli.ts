@@ -9,6 +9,7 @@ import Config from './Config.js';
 import Env from './Env.js';
 import Prompter from './Prompter.js';
 import Logger from './Logger.js';
+import Git from './GIt.js';
 
 /* eslint-disable no-console */
 
@@ -18,6 +19,7 @@ const init = async () => {
   await env.load();
   const config = new Config({ env });
   await config.load();
+  const git = new Git({ config });
   const prompter = new Prompter({ env, config });
   const flagManager = new FlagManager({ env, config });
   await flagManager.load();
@@ -27,6 +29,7 @@ const init = async () => {
     config,
     flagManager,
     prompter,
+    git,
   };
 };
 
@@ -36,12 +39,13 @@ const init = async () => {
       command: ['add', 'new', 'create'],
       describe: 'Add a new flag interactively',
       handler: async () => {
-        const { prompter, env, flagManager } = await init();
+        const { prompter, env, flagManager, git } = await init();
+        await git.ensureCleanTree();
         const name = await prompter.askForNewFlagName();
         const username = env.get('gitUserName') || env.get('osUserName');
-        const trx = flagManager.introduceNewFlag(name, username);
+        const flagManagerTrx = flagManager.introduceNewFlag(name, username);
         const description = await prompter.askForValue('Description');
-        const enabledFor = await prompter.askForEnvironments(trx.details.enabledFor);
+        const enabledFor = await prompter.askForEnvironments(flagManagerTrx.details.enabledFor);
         await prompter.confirmDetails([
           ['Action', 'Adding a new Feature Flag'],
           ['with Name', name],
@@ -49,43 +53,47 @@ const init = async () => {
           ...(enabledFor ? [['enable for Environment(s)', enabledFor.join()]] : []),
           ['by User', username],
         ]);
-        await trx.commit({ description, enabledFor });
+        const { enableFor } = await flagManagerTrx.commit({ description, enabledFor });
         await flagManager.generateOutput();
+        await git.commit(`Introduce ${name}. Enable for ${enableFor.join(',')}`);
       },
     })
     .command({
       command: ['remove', 'rm', 'delete', 'del'],
       describe: 'Remove a flag interactively',
       handler: async () => {
-        const { prompter, flagManager, env } = await init();
+        const { prompter, flagManager, env, git } = await init();
+        await git.ensureCleanTree();
         const name = await prompter.askForExistingFlagName(flagManager.getFlags());
         const username = env.get('gitUserName') || env.get('osUserName');
-        const trx = flagManager.removeFlag(name, username);
+        const flagManagerTrx = flagManager.removeFlag(name, username);
         await prompter.confirmDetails([
           ['Action', 'Removing a Feature Flag'],
           ['with Name', name],
-          ...(trx.details.description ? [['with Description', trx.details.description]] : []),
-          ['which currently enabled for Environment(s)', trx.details.enabledFor.join()],
+          ...(flagManagerTrx.details.description ? [['with Description', flagManagerTrx.details.description]] : []),
+          ['which currently enabled for Environment(s)', flagManagerTrx.details.enabledFor.join()],
           ['by User', username],
         ]);
-        await trx.commit();
+        await flagManagerTrx.commit();
         await flagManager.generateOutput();
+        await git.commit(`Remove ${name}`);
       },
     })
     .command({
       command: ['set', 'toggle', 'update', 'change'],
       describe: 'Set the states for a feature flag interactively',
       handler: async () => {
-        const { prompter, env, flagManager } = await init();
+        const { prompter, env, flagManager, git } = await init();
+        await git.ensureCleanTree();
         const name = await prompter.askForExistingFlagName(flagManager.getFlags());
         const username = env.get('gitUserName') || env.get('osUserName');
-        const trx = flagManager.updateFlag(name, username);
+        const flagManagerTrx = flagManager.updateFlag(name, username);
 
-        const description = await prompter.askForValue('Description', trx.details.description);
-        const enabledFor = await prompter.askForEnvironments(trx.details.enabledFor);
+        const description = await prompter.askForValue('Description', flagManagerTrx.details.description);
+        const enabledFor = await prompter.askForEnvironments(flagManagerTrx.details.enabledFor);
 
-        const descChange = description === trx.details.description;
-        const envChange = enabledFor !== trx.details.enabledFor;
+        const descChange = description === flagManagerTrx.details.description;
+        const envChange = enabledFor !== flagManagerTrx.details.enabledFor;
 
         if (!descChange && !envChange) {
           Logger.warn(`No changes to make`);
@@ -100,8 +108,17 @@ const init = async () => {
 
           ['by User', username],
         ]);
-        await trx.commit({ description, enabledFor });
+        const { enableFor, disableFor, updateDescription } = await flagManagerTrx.commit({ description, enabledFor });
         await flagManager.generateOutput();
+        await git.commit(
+          `Update ${name}: ${[
+            enableFor.length ? `enable for ${enableFor.join()}` : '',
+            disableFor.length ? `disable for ${disableFor.join()}` : '',
+            updateDescription ? `update description` : '',
+          ]
+            .filter(Boolean)
+            .join(', ')}`
+        );
       },
     })
     .command({
@@ -116,8 +133,10 @@ const init = async () => {
       command: ['gen', 'generate'],
       describe: 'Generate the ouput JSON and Typescript Type Definition files',
       handler: async () => {
-        const { flagManager } = await init();
+        const { flagManager, git } = await init();
+        await git.ensureCleanTree();
         await flagManager.generateOutput();
+        await git.commit('Regenerate output');
       },
     })
     .command({

@@ -23,6 +23,8 @@ type Flag = {
   history: { action: string; by: string; at: string }[];
 };
 
+type ActionSummary = { enableFor: string[]; disableFor: string[]; updateDescription: boolean };
+
 const flagsSchema = Joi.array<Flag[]>().items({
   name: Joi.string().required(),
   deleted: Joi.boolean().empty(false),
@@ -125,7 +127,7 @@ export default class FlagManager {
     }
     return {
       details: { enabledFor: this._deps.config.get('environments').slice(0, 1) },
-      commit: async ({ description, enabledFor }: { description: string; enabledFor: string[] }) => {
+      commit: async ({ description, enabledFor }: { description: string; enabledFor: string[] }): Promise<ActionSummary> => {
         const action = ['Introduce'];
         if (enabledFor.length) {
           action.push(`Enable for ${enabledFor.join()}`);
@@ -133,6 +135,7 @@ export default class FlagManager {
         const newHistoryEntry = { action: action.join('. '), by: byUser, at: DateTime.now().toISO()! };
         this._flags.push({ name, description, enabledFor, history: [newHistoryEntry] });
         await this.save();
+        return { enableFor: [...enabledFor], disableFor: [], updateDescription: false };
       },
     };
   }
@@ -148,11 +151,12 @@ export default class FlagManager {
         enabledFor: flag.enabledFor,
         description: flag.description,
       },
-      commit: async () => {
+      commit: async (): Promise<ActionSummary> => {
         const newHistoryEntry = { action: 'Delete', by: byUser, at: DateTime.now().toISO()! };
         flag.history.push(newHistoryEntry);
         flag.deleted = true;
         await this.save();
+        return { enableFor: [], disableFor: [...flag.enabledFor], updateDescription: false };
       },
     };
   }
@@ -168,9 +172,10 @@ export default class FlagManager {
         enabledFor: flag.enabledFor,
         description: flag.description,
       },
-      commit: async ({ description, enabledFor }: { description: string; enabledFor: string[] }) => {
+      commit: async ({ description, enabledFor }: { description: string; enabledFor: string[] }): Promise<ActionSummary> => {
         const action = [];
-        if (flag.description !== description) {
+        const updateDescription = flag.description !== description;
+        if (updateDescription) {
           action.push('Update description');
         }
         const enableFor = enabledFor.filter((env) => !flag.enabledFor.includes(env));
@@ -186,6 +191,7 @@ export default class FlagManager {
         flag.description = description;
         flag.enabledFor = enabledFor;
         await this.save();
+        return { enableFor, disableFor, updateDescription };
       },
     };
   }
