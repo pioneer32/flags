@@ -133,10 +133,8 @@ const init = async () => {
       command: ['gen', 'generate'],
       describe: 'Generate the ouput JSON and Typescript Type Definition files',
       handler: async () => {
-        const { flagManager, git } = await init();
-        await git.ensureCleanTree();
+        const { flagManager } = await init();
         await flagManager.generateOutput();
-        await git.commit('Regenerate output');
       },
     })
     .command({
