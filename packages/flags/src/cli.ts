@@ -55,7 +55,7 @@ const init = async () => {
         ]);
         const { enableFor } = await flagManagerTrx.commit({ description, enabledFor });
         await flagManager.generateOutput();
-        await git.commit(`Introduce ${name}. Enable for ${enableFor.join(',')}`);
+        await git.commit(`${[`Introduce ${name}`, enableFor.length ? `Enable for ${enableFor.join()}` : ''].filter(Boolean).join('. ')}`);
       },
     })
     .command({
@@ -112,12 +112,12 @@ const init = async () => {
         await flagManager.generateOutput();
         await git.commit(
           `Update ${name}: ${[
-            enableFor.length ? `enable for ${enableFor.join()}` : '',
-            disableFor.length ? `disable for ${disableFor.join()}` : '',
-            updateDescription ? `update description` : '',
+            enableFor.length ? `Enable for ${enableFor.join()}` : '',
+            disableFor.length ? `Disable for ${disableFor.join()}` : '',
+            updateDescription ? `Update description` : '',
           ]
             .filter(Boolean)
-            .join(', ')}`
+            .join('. ')}`
         );
       },
     })

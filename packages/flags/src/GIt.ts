@@ -29,9 +29,21 @@ export default class Git {
     if (!this._deps.config.get('git.commit')) {
       return;
     }
-    await this.git.add(
-      [this._deps.config.get('flagFile'), this._deps.config.get('output.jsonFile'), this._deps.config.get('output.typeDefFile')].filter(Boolean) as string[]
-    );
-    await this.git.commit(message);
+    for (const file of [this._deps.config.get('flagFile'), this._deps.config.get('output.jsonFile'), this._deps.config.get('output.typeDefFile')].filter(
+      Boolean
+    )) {
+      try {
+        await this.git.add(file!);
+      } catch (e) {
+        console.warn((e as Error).message);
+      }
+    }
+    const { staged } = await this.git.status();
+    if (staged.length) {
+      console.info(`Committing ${staged.length} files...`);
+      await this.git.commit(message);
+    } else {
+      console.info(`Nothing to commit. Please check your .gitconfig file to make sure the flags' files aren't ignored`);
+    }
   }
 }

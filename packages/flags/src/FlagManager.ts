@@ -187,10 +187,12 @@ export default class FlagManager {
           action.push(`Disable for ${disableFor.join()}`);
         }
         const newHistoryEntry = { action: action.join('. '), by: byUser, at: DateTime.now().toISO()! };
-        flag.history.push(newHistoryEntry);
-        flag.description = description;
-        flag.enabledFor = enabledFor;
-        await this.save();
+        if (action.length) {
+          flag.history.push(newHistoryEntry);
+          flag.description = description;
+          flag.enabledFor = enabledFor;
+          await this.save();
+        }
         return { enableFor, disableFor, updateDescription };
       },
     };
