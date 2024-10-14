@@ -1,6 +1,6 @@
 {
   "name": "@pioneer32/flags",
-  "version": "1.0.0-alpha.46",
+  "version": "1.0.0-alpha.47",
   "license": "MIT",
   "author": "Vlad Churakov",
   "scripts": {
@@ -56,10 +56,10 @@
     "chalk": "^5.3.0",
     "fs-extra": "^11.2.0",
     "joi": "^17.12.3",
-    "simple-git": "^3.27.0",
     "lodash": "^4.17.21",
     "luxon": "^3.4.4",
     "node-banner": "^1.4.0",
+    "simple-git": "^3.27.0",
     "ts-custom-error": "^3.3.1",
     "ts-node": "^10.9.1",
     "yargs": "^17.7.2"

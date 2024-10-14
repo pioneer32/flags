@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-alpha.47](https://github.com/pioneer32/flags/compare/v1.0.0-alpha.46...v1.0.0-alpha.47) (2024-10-14)
+
+### Features
+
+- Add "change" as an alias to "update" ([82779ca](https://github.com/pioneer32/flags/commit/82779cafe44732e1bf7f9c604433f10194aa2918))
+- Add git support ([cd8707d](https://github.com/pioneer32/flags/commit/cd8707d34eccc73c4112bf826662e100d2a13a44))
+- Make log more verbose ([fc83a85](https://github.com/pioneer32/flags/commit/fc83a85fa555d049fefb0444bb31e45b9153363b))
+
 # [1.0.0-alpha.46](https://github.com/pioneer32/flags/compare/v1.0.0-alpha.45...v1.0.0-alpha.46) (2024-04-25)
 
 ### Bug Fixes
