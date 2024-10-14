@@ -126,12 +126,12 @@ export default class FlagManager {
     return {
       details: { enabledFor: this._deps.config.get('environments').slice(0, 1) },
       commit: async ({ description, enabledFor }: { description: string; enabledFor: string[] }) => {
-        this._flags.push({
-          name,
-          description,
-          enabledFor,
-          history: [{ action: 'Introduce', by: byUser, at: DateTime.now().toISO()! }],
-        });
+        const action = ['Introduce'];
+        if (enabledFor.length) {
+          action.push(`Enable for ${enabledFor.join()}`);
+        }
+        const newHistoryEntry = { action: action.join('. '), by: byUser, at: DateTime.now().toISO()! };
+        this._flags.push({ name, description, enabledFor, history: [newHistoryEntry] });
         await this.save();
       },
     };
@@ -149,7 +149,8 @@ export default class FlagManager {
         description: flag.description,
       },
       commit: async () => {
-        flag.history.push({ action: 'Delete', by: byUser, at: DateTime.now().toISO()! });
+        const newHistoryEntry = { action: 'Delete', by: byUser, at: DateTime.now().toISO()! };
+        flag.history.push(newHistoryEntry);
         flag.deleted = true;
         await this.save();
       },
@@ -168,7 +169,20 @@ export default class FlagManager {
         description: flag.description,
       },
       commit: async ({ description, enabledFor }: { description: string; enabledFor: string[] }) => {
-        flag.history.push({ action: 'Update', by: byUser, at: DateTime.now().toISO()! });
+        const action = [];
+        if (flag.description !== description) {
+          action.push('Update description');
+        }
+        const enableFor = enabledFor.filter((env) => !flag.enabledFor.includes(env));
+        if (enableFor.length) {
+          action.push(`Enable for ${enableFor.join()}`);
+        }
+        const disableFor = flag.enabledFor.filter((env) => !enabledFor.includes(env));
+        if (disableFor.length) {
+          action.push(`Disable for ${disableFor.join()}`);
+        }
+        const newHistoryEntry = { action: action.join('. '), by: byUser, at: DateTime.now().toISO()! };
+        flag.history.push(newHistoryEntry);
         flag.description = description;
         flag.enabledFor = enabledFor;
         await this.save();
