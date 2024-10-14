@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-alpha.50](https://github.com/pioneer32/flags/compare/v1.0.0-alpha.49...v1.0.0-alpha.50) (2024-10-14)
+
+### Bug Fixes
+
+- Disable committing changes on "gen" ([57b5539](https://github.com/pioneer32/flags/commit/57b55395951608f87115ee8ff189200c40cd9428))
+
 # [1.0.0-alpha.49](https://github.com/pioneer32/flags/compare/v1.0.0-alpha.48...v1.0.0-alpha.49) (2024-10-14)
 
 ### Bug Fixes
