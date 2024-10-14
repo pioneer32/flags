@@ -73,7 +73,7 @@ const init = async () => {
       },
     })
     .command({
-      command: ['set', 'toggle', 'update'],
+      command: ['set', 'toggle', 'update', 'change'],
       describe: 'Set the states for a feature flag interactively',
       handler: async () => {
         const { prompter, env, flagManager } = await init();
