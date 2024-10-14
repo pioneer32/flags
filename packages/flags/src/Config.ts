@@ -21,8 +21,8 @@ type Params = {
   };
 };
 
-type OutputParams = Omit<Params, 'output'> & {
-  'git.commit'?: NonNullable<Params['git']>['commit'];
+type OutputParams = Omit<Params, 'output' | 'git'> & {
+  'git.commit': NonNullable<Params['git']>['commit'];
   'output.jsonFile': Params['output']['jsonFile'];
   'output.typeDefFile': Params['output']['typeDefFile'];
 };
@@ -95,6 +95,8 @@ export default class Config {
         return path.resolve(this.tempatePath(this._opts.output.jsonFile)) as OutputParams[T];
       case 'output.typeDefFile':
         return (this._opts.output.typeDefFile && path.resolve(this.tempatePath(this._opts.output.typeDefFile))) as OutputParams[T];
+      case 'git.commit':
+        return !!this._opts.git?.commit as OutputParams[T];
       default:
         throw new Error(`Unsupported config property: "${name}"`);
     }
