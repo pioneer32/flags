@@ -66,34 +66,26 @@ export default class FlagManager {
     const filenameTypeDef = this._deps.config.get('output.typeDefFile');
     const flags = this.getFlags();
     try {
+      const json = flags.reduce((output, { name, enabledFor }) => {
+        // eslint-disable-next-line no-param-reassign
+        output[name] = enabledFor;
+        return output;
+      }, {} as Record<string, string[]>);
+      const typeDefContent = [
+        `/* This content is generated. Any change will be lost */`,
+        ``,
+        `export type FeatureFlagName =`,
+        ...flags.map(({ name }) => `  | '${name}'`),
+        `  ;`,
+      ].join('\n');
+
       await Promise.all([
-        fs
-          .writeJson(
-            filenameJson,
-            flags.reduce((output, { name, enabledFor }) => {
-              // eslint-disable-next-line no-param-reassign
-              output[name] = enabledFor;
-              return output;
-            }, {} as Record<string, string[]>),
-            { spaces: '  ' }
-          )
-          .then(() => Logger.info(`Output JSON saved at "${filenameJson}"`)),
-        ...(filenameTypeDef
-          ? [
-              fs
-                .writeFile(
-                  filenameTypeDef,
-                  [
-                    `/* This content is generated. Any change will be lost */`,
-                    ``,
-                    `export type FeatureFlagName =`,
-                    ...flags.map(({ name }) => `  | '${name}'`),
-                    `  ;`,
-                  ].join('\n')
-                )
-                .then(() => Logger.info(`Output Typescript Definition saved at "${filenameJson}"`)),
-            ]
-          : []),
+        ...(Array.isArray(filenameJson) ? filenameJson : [filenameJson])
+          .filter(Boolean)
+          .map((fname) => fs.writeJson(fname, json, { spaces: '  ' }).then(() => Logger.info(`Output JSON saved at "${filenameJson}"`))),
+        ...(Array.isArray(filenameTypeDef) ? filenameTypeDef : [filenameTypeDef])
+          .filter(Boolean)
+          .map((fname) => fs.writeFile(fname!, typeDefContent).then(() => Logger.info(`Output Typescript Definition saved at "${filenameJson}"`))),
       ]);
     } catch (err) {
       throw new ChainedError(`Failed to write output files`, err as Error);

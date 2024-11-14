@@ -16,8 +16,8 @@ type Params = {
     commit: boolean;
   };
   output: {
-    jsonFile: string;
-    typeDefFile?: string;
+    jsonFile: string | string[];
+    typeDefFile?: string | string[];
   };
 };
 
@@ -36,8 +36,8 @@ const defaultConfig: Params = {
   flagPrefix: 'FT_',
   environments: ['dev', 'tst', 'stg', 'prd'],
   output: {
-    jsonFile: '{rootDir}/features.output.json',
-    typeDefFile: '{rootDir}/features.output.d.ts',
+    jsonFile: ['{rootDir}/features.output.json'],
+    typeDefFile: ['{rootDir}/features.output.d.ts'],
   } as Params['output'],
 };
 
@@ -56,8 +56,8 @@ const configSchema = Joi.object<Params>({
     commit: Joi.boolean().required(),
   }).optional(),
   output: Joi.object<Params['output']>({
-    jsonFile: Joi.string().required(),
-    typeDefFile: Joi.string(),
+    jsonFile: Joi.alternatives().try(Joi.string(), Joi.array().items(Joi.string())).required(),
+    typeDefFile: Joi.alternatives().try(Joi.string(), Joi.array().items(Joi.string())),
   }).default(defaultConfig.output),
 });
 
@@ -92,9 +92,17 @@ export default class Config {
       case 'environments':
         return this._opts.environments as OutputParams[T];
       case 'output.jsonFile':
-        return path.resolve(this.tempatePath(this._opts.output.jsonFile)) as OutputParams[T];
+        return (
+          Array.isArray(this._opts.output.jsonFile)
+            ? this._opts.output.jsonFile.map((jsonFile) => path.resolve(this.tempatePath(jsonFile)))
+            : path.resolve(this.tempatePath(this._opts.output.jsonFile))
+        ) as OutputParams[T];
       case 'output.typeDefFile':
-        return (this._opts.output.typeDefFile && path.resolve(this.tempatePath(this._opts.output.typeDefFile))) as OutputParams[T];
+        return (this._opts.output.typeDefFile &&
+          (Array.isArray(this._opts.output.typeDefFile)
+            ? this._opts.output.typeDefFile.map((typeDefFile) => path.resolve(this.tempatePath(typeDefFile)))
+            : path.resolve(this.tempatePath(this._opts.output.typeDefFile)))) as OutputParams[T];
+
       case 'git.commit':
         return !!this._opts.git?.commit as OutputParams[T];
       default:
