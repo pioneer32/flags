@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-alpha.51](https://github.com/pioneer32/flags/compare/v1.0.0-alpha.50...v1.0.0-alpha.51) (2024-11-14)
+
+### Features
+
+- Add support multiple output files ([7375d6c](https://github.com/pioneer32/flags/commit/7375d6c1bd87a85e06d07f94df145c655bfbbbc1))
+
 # [1.0.0-alpha.50](https://github.com/pioneer32/flags/compare/v1.0.0-alpha.49...v1.0.0-alpha.50) (2024-10-14)
 
 ### Bug Fixes
