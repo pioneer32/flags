@@ -82,10 +82,10 @@ export default class FlagManager {
       await Promise.all([
         ...(Array.isArray(filenameJson) ? filenameJson : [filenameJson])
           .filter(Boolean)
-          .map((fname) => fs.writeJson(fname, json, { spaces: '  ' }).then(() => Logger.info(`Output JSON saved at "${filenameJson}"`))),
+          .map((fname) => fs.writeJson(fname, json, { spaces: '  ' }).then(() => Logger.info(`Output JSON saved at "${fname}"`))),
         ...(Array.isArray(filenameTypeDef) ? filenameTypeDef : [filenameTypeDef])
           .filter(Boolean)
-          .map((fname) => fs.writeFile(fname!, typeDefContent).then(() => Logger.info(`Output Typescript Definition saved at "${filenameJson}"`))),
+          .map((fname) => fs.writeFile(fname!, typeDefContent).then(() => Logger.info(`Output Typescript Definition saved at "${fname}"`))),
       ]);
     } catch (err) {
       throw new ChainedError(`Failed to write output files`, err as Error);
